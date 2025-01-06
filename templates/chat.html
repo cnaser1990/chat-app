@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #chat-log {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 10px;
+            padding: 10px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #chat-message-input {
+            width: 80%;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #user-list {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .message {
+            padding: 5px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .message .sender {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .message .timestamp {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .message .file-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Room: {{ room_name }}</h1>
+    <div id="chat-log">
+        <!-- Messages will be dynamically loaded here -->
+    </div>
+
+    <div id="user-list">
+        <h3>Users in this room:</h3>
+        <ul id="user-list-ul">
+            {% for user in room.members.all %}
+                <li>{{ user.username }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <input id="chat-message-input" type="text" size="80">
+    <button onclick="sendMessage()">Send</button>
+
+    <div>
+        <input type="file" id="file-input">
+    </div>
+
+    <script>
+        const roomName = "{{ room_name }}";
+        const socket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const chatLog = document.getElementById('chat-log');
+
+            // Display message with sender, timestamp, and optional file
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `
+                <span class="sender">${data.sender}</span>
+                <span class="timestamp">${data.timestamp}</span><br>
+                <span class="content">${data.message}</span>
+                ${data.file ? '<br><a class="file-link" href="/media/' + data.file + '" download>Download File</a>' : ''}
+            `;
+            chatLog.appendChild(messageElement);
+            chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll to latest message
+        };
+
+        function sendMessage() {
+            const message = document.getElementById('chat-message-input').value;
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+
+            const data = { 'message': message };
+
+            // If there's a file, we can send it as well (e.g., in a different way via a POST request)
+            if (file) {
+                // Handle file upload if necessary (this will depend on your implementation)
+                data['file'] = file.name;
+            }
+
+            socket.send(JSON.stringify(data));
+            document.getElementById('chat-message-input').value = ''; // Clear input after sending
+        }
+    </script>
+</body>
+</html>

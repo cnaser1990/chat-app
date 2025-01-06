@@ -1,0 +1,8 @@
+djangorestframework
+pillow
+Django
+channels
+channels-redis
+redis
+gunicorn
+daphne

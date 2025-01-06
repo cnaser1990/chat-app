@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .login-container, .room-container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="room-container">
+        <h1>Join a Chat Room</h1>
+        <!-- Adjusted form with dynamic action -->
+        <form id="join-room-form" method="get">
+            <input type="text" name="room_name" id="room-name" placeholder="Enter Room Name" required>
+            <button type="submit">Join Room</button>
+        </form>
+    </div>
+
+    <script>
+        // Ensure the form action dynamically updates to the correct URL before submitting
+        const form = document.getElementById("join-room-form");
+        form.addEventListener("submit", function(event) {
+            const roomName = document.getElementById("room-name").value;
+            // Set the action to the desired URL pattern
+            form.action = '/chat/' + roomName + '/';
+        });
+    </script>
+</body>
+</html>
