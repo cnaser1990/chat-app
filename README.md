@@ -19,8 +19,8 @@ A real-time chat application built using Django, Channels, and WebSockets, with 
 ### 1. Clone the repository
 
 ```bash
-git clone https://your-repository-url.git
-cd your-project-folder
+git clone https://github.com/cnaser1990/chat-app.git
+cd chat-app
 ```
 ### 2. Install dependencies
 
